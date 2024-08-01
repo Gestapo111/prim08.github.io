@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación: La Evolución de la Vida (Biología)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Evaluación: La Evolución de la Vida (Biología)</h1>
+    <div class="quiz-container">
+        <div id="quiz"></div>
+        <button id="submit">Enviar respuestas</button>
+        <div id="results"></div>
+    </div>
+    <footer>
+        &copy; Derechos Reservados Prof. Alberto Sanchez
+    </footer>
+    <script>
+        const quizData = [
+            {
+                question: "¿Qué es la evolución?",
+                answers: [
+                    { text: "El cambio en las características hereditarias de una población a lo largo del tiempo.", correct: true },
+                    { text: "El proceso de extinción de una especie.", correct: false },
+                    { text: "La reproducción de organismos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la selección natural?",
+                answers: [
+                    { text: "El proceso por el cual los organismos mejor adaptados a su entorno sobreviven y se reproducen.", correct: true },
+                    { text: "La extinción de especies menos adaptadas.", correct: false },
+                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una mutación?",
+                answers: [
+                    { text: "Un cambio en la secuencia de ADN de un organismo.", correct: true },
+                    { text: "La fusión de dos células.", correct: false },
+                    { text: "La reproducción de organismos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una especie?",
+                answers: [
+                    { text: "Un grupo de organismos que pueden reproducirse y tener descendencia fértil.", correct: true },
+                    { text: "Un grupo de organismos que comparten un hábitat.", correct: false },
+                    { text: "Un grupo de organismos que se alimentan de la misma manera.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la especiación?",
+                answers: [
+                    { text: "El proceso por el cual una población se divide en dos o más especies distintas.", correct: true },
+                    { text: "La migración de una población a un nuevo hábitat.", correct: false },
+                    { text: "La extinción de una especie.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un fósil?",
+                answers: [
+                    { text: "Los restos o rastros preservados de organismos antiguos.", correct: true },
+                    { text: "Un organismo que vive en ambientes extremos.", correct: false },
+                    { text: "Un tipo de bacteria.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la adaptación?",
+                answers: [
+                    { text: "Una característica hereditaria que mejora la capacidad de un organismo para sobrevivir y reproducirse en su entorno.", correct: true },
+                    { text: "Un cambio en el comportamiento de un organismo.", correct: false },
+                    { text: "Una enfermedad genética.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la deriva genética?",
+                answers: [
+                    { text: "El cambio aleatorio en las frecuencias de alelos en una población.", correct: true },
+                    { text: "La selección natural en una población.", correct: false },
+                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el equilibrio puntual?",
+                answers: [
+                    { text: "La teoría de que las especies experimentan largos periodos de estabilidad interrumpidos por breves episodios de cambio rápido.", correct: true },
+                    { text: "La teoría de que las especies cambian gradualmente con el tiempo.", correct: false },
+                    { text: "La teoría de que las especies no cambian con el tiempo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la radiación adaptativa?",
+                answers: [
+                    { text: "El proceso por el cual una especie se diversifica en varias formas adaptadas a diferentes nichos ecológicos.", correct: true },
+                    { text: "La migración de una especie a nuevos hábitats.", correct: false },
+                    { text: "La extinción de una especie.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el ancestro común?",
+                answers: [
+                    { text: "El organismo del cual descienden dos o más especies diferentes.", correct: true },
+                    { text: "Una especie extinta.", correct: false },
+                    { text: "Un fósil de una especie antigua.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la homología?",
+                answers: [
+                    { text: "La similitud en características debido a un ancestro común.", correct: true },
+                    { text: "La similitud en características debido a una convergencia evolutiva.", correct: false },
+                    { text: "La diferencia en características debido a una divergencia evolutiva.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la analogía?",
+                answers: [
+                    { text: "La similitud en características debido a una convergencia evolutiva.", correct: true },
+                    { text: "La similitud en características debido a un ancestro común.", correct: false },
+                    { text: "La diferencia en características debido a una divergencia evolutiva.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la filogenia?",
+                answers: [
+                    { text: "El estudio de las relaciones evolutivas entre organismos.", correct: true },
+                    { text: "El estudio de las estructuras celulares.", correct: false },
+                    { text: "El estudio de los fósiles.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el árbol filogenético?",
+                answers: [
+                    { text: "Una representación gráfica de las relaciones evolutivas entre especies.", correct: true },
+                    { text: "Un diagrama que muestra la estructura de una célula.", correct: false },
+                    { text: "Un mapa que muestra la distribución de una especie.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la biogeografía?",
+                answers: [
+                    { text: "El estudio de la distribución de las especies en el espacio y el tiempo.", correct: true },
+                    { text: "El estudio de la estructura y función de los ecosistemas.", correct: false },
+                    { text: "El estudio de la estructura y función de las células.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la coevolución?",
+                answers: [
+                    { text: "La influencia recíproca de dos o más especies en su evolución.", correct: true },
+                    { text: "La evolución de una especie en respuesta a cambios ambientales.", correct: false },
+                    { text: "La evolución de una especie en respuesta a cambios genéticos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la deriva genética?",
+                answers: [
+                    { text: "El cambio aleatorio en las frecuencias de alelos en una población.", correct: true },
+                    { text: "La selección natural en una población.", correct: false },
+                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la selección artificial?",
+                answers: [
+                    { text: "La reproducción controlada de organismos con características deseadas por los humanos.", correct: true },
+                    { text: "La selección natural en una población.", correct: false },
+                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la genética de poblaciones?",
+                answers: [
+                    { text: "El estudio de las frecuencias de alelos y genotipos en una población.", correct: true },
+                    { text: "El estudio de la estructura y función de los ecosistemas.", correct: false },
+                    { text: "El estudio de la estructura y función de las células.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la adaptación convergente?",
+                answers: [
+                    { text: "El desarrollo de características similares en especies no relacionadas debido a presiones ambientales similares.", correct: true },
+                    { text: "La evolución de características diferentes en especies relacionadas debido a presiones ambientales diferentes.", correct: false },
+                    { text: "La evolución de características similares en especies relacionadas debido a presiones ambientales similares.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la adaptación divergente?",
+                answers: [
+                    { text: "La evolución de características diferentes en especies relacionadas debido a presiones ambientales diferentes.", correct: true },
+                    { text: "La evolución de características similares en especies no relacionadas debido a presiones ambientales similares.", correct: false },
+                    { text: "La evolución de características diferentes en especies no relacionadas debido a presiones ambientales diferentes.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la extinción?",
+                answers: [
+                    { text: "La desaparición total de una especie.", correct: true },
+                    { text: "La migración de una especie a nuevos hábitats.", correct: false },
+                    { text: "La evolución de una nueva especie.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el registro fósil?",
+                answers: [
+                    { text: "La colección de fósiles que documentan la historia de la vida en la Tierra.", correct: true },
+                    { text: "La colección de muestras de ADN de diferentes especies.", correct: false },
+                    { text: "La colección de especies vivas en la actualidad.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la herencia de caracteres adquiridos?",
+                answers: [
+                    { text: "La teoría desacreditada de que las características adquiridas durante la vida de un organismo pueden ser transmitidas a su descendencia.", correct: true },
+                    { text: "La teoría de que las características genéticas pueden ser modificadas por el entorno.", correct: false },
+                    { text: "La teoría de que los caracteres adquiridos no se heredan.", correct: false }
+                ]
+            }
+        ];
+
+        let attempt = 0;
+        const maxAttempts = 3;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+            quizData.forEach((data, index) => {
+                const questionContainer = document.createElement('div');
+                questionContainer.className = 'question';
+
+                const questionTitle = document.createElement('h3');
+                questionTitle.innerText = `${index + 1}. ${data.question}`;
+                questionContainer.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                shuffle(data.answers).forEach(answer => {
+                    const option = document.createElement('li');
+                    const optionLabel = document.createElement('label');
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question${index}`;
+                    optionInput.value = answer.correct;
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(document.createTextNode(answer.text));
+                    option.appendChild(optionLabel);
+                    optionsList.appendChild(option);
+                });
+
+                questionContainer.appendChild(optionsList);
+                quizContainer.appendChild(questionContainer);
+            });
+        }
+
+        function submitQuiz() {
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+                return;
+            }
+
+            const resultsContainer = document.getElementById('results');
+            const answers = document.querySelectorAll('input[type="radio"]:checked');
+            let score = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                if (selected === true) {
+                    score += 0.4; // Cada respuesta correcta vale 0.4 puntos
+                }
+            });
+
+            score = Math.round(score * 10) / 10; // Redondear a un decimal
+            let feedback = quizData.map((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                let result;
+                if (selected === null) {
+                    result = "No contestada";
+                } else if (selected === true) {
+                    result = "Correcta";
+                } else {
+                    result = "Incorrecta";
+                }
+                return `<p>${index + 1}. ${result}</p>`;
+            }).join("");
+
+            resultsContainer.innerHTML = `<h3>Resultados:</h3><p>Puntaje: ${score} / 10</p>${feedback}`;
+
+            attempt++;
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+            }
+        }
+
+        document.getElementById('submit').addEventListener('click', submitQuiz);
+
+        loadQuiz();
+    </script>
+</body>
+</html>
