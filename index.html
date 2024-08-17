@@ -3,365 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluación: La Evolución de la Vida (Biología)</title>
+    <title>Unidad 8: La Evolución de la Vida</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 {
-            color: #333;
-        }
-        .quiz-container {
-            background-color: #fff;
             padding: 20px;
-            margin: 20px 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
+        }
+        h1, h2 {
+            text-align: center;
         }
         .question {
-            margin-bottom: 15px;
+            margin: 20px 0;
         }
-        .options {
-            list-style-type: none;
-            padding: 0;
-        }
-        .options li {
+        .question label {
+            font-weight: bold;
+            display: block;
             margin-bottom: 10px;
         }
-        button {
+        .question .options {
+            margin-left: 20px;
+        }
+        .question .options input {
+            margin-right: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .popup-content input {
+            margin-bottom: 20px;
+            padding: 15px;
+            width: 80%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .popup-content button {
+            padding: 15px 30px;
             background-color: #28a745;
             color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
             font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        button:hover {
-            background-color: #218838;
-        }
-        #results {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        footer {
-            background-color: #333;
+        button.submit-btn {
+            padding: 15px 30px;
+            background-color: #007bff;
             color: #fff;
-            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
             width: 100%;
             text-align: center;
-            position: fixed;
-            bottom: 0;
+        }
+        button.submit-btn:hover {
+            background-color: #0056b3;
+        }
+        #timer {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Evaluación: La Evolución de la Vida (Biología)</h1>
-    <div class="quiz-container">
-        <div id="quiz"></div>
-        <button id="submit">Enviar respuestas</button>
-        <div id="results"></div>
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <h2>Complete la siguiente información</h2>
+        <input type="text" id="nombre" placeholder="Nombre Completo" required>
+        <input type="text" id="nie" placeholder="NIE" required>
+        <button onclick="validatePopup()">Continuar</button>
     </div>
-    <footer>
-        &copy; Derechos Reservados Prof. Alberto Sanchez
-    </footer>
-    <script>
-        const quizData = [
-            {
-                question: "¿Qué es la evolución?",
-                answers: [
-                    { text: "El cambio en las características hereditarias de una población a lo largo del tiempo.", correct: true },
-                    { text: "El proceso de extinción de una especie.", correct: false },
-                    { text: "La reproducción de organismos.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la selección natural?",
-                answers: [
-                    { text: "El proceso por el cual los organismos mejor adaptados a su entorno sobreviven y se reproducen.", correct: true },
-                    { text: "La extinción de especies menos adaptadas.", correct: false },
-                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es una mutación?",
-                answers: [
-                    { text: "Un cambio en la secuencia de ADN de un organismo.", correct: true },
-                    { text: "La fusión de dos células.", correct: false },
-                    { text: "La reproducción de organismos.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es una especie?",
-                answers: [
-                    { text: "Un grupo de organismos que pueden reproducirse y tener descendencia fértil.", correct: true },
-                    { text: "Un grupo de organismos que comparten un hábitat.", correct: false },
-                    { text: "Un grupo de organismos que se alimentan de la misma manera.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la especiación?",
-                answers: [
-                    { text: "El proceso por el cual una población se divide en dos o más especies distintas.", correct: true },
-                    { text: "La migración de una población a un nuevo hábitat.", correct: false },
-                    { text: "La extinción de una especie.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es un fósil?",
-                answers: [
-                    { text: "Los restos o rastros preservados de organismos antiguos.", correct: true },
-                    { text: "Un organismo que vive en ambientes extremos.", correct: false },
-                    { text: "Un tipo de bacteria.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la adaptación?",
-                answers: [
-                    { text: "Una característica hereditaria que mejora la capacidad de un organismo para sobrevivir y reproducirse en su entorno.", correct: true },
-                    { text: "Un cambio en el comportamiento de un organismo.", correct: false },
-                    { text: "Una enfermedad genética.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la deriva genética?",
-                answers: [
-                    { text: "El cambio aleatorio en las frecuencias de alelos en una población.", correct: true },
-                    { text: "La selección natural en una población.", correct: false },
-                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el equilibrio puntual?",
-                answers: [
-                    { text: "La teoría de que las especies experimentan largos periodos de estabilidad interrumpidos por breves episodios de cambio rápido.", correct: true },
-                    { text: "La teoría de que las especies cambian gradualmente con el tiempo.", correct: false },
-                    { text: "La teoría de que las especies no cambian con el tiempo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la radiación adaptativa?",
-                answers: [
-                    { text: "El proceso por el cual una especie se diversifica en varias formas adaptadas a diferentes nichos ecológicos.", correct: true },
-                    { text: "La migración de una especie a nuevos hábitats.", correct: false },
-                    { text: "La extinción de una especie.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el ancestro común?",
-                answers: [
-                    { text: "El organismo del cual descienden dos o más especies diferentes.", correct: true },
-                    { text: "Una especie extinta.", correct: false },
-                    { text: "Un fósil de una especie antigua.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la homología?",
-                answers: [
-                    { text: "La similitud en características debido a un ancestro común.", correct: true },
-                    { text: "La similitud en características debido a una convergencia evolutiva.", correct: false },
-                    { text: "La diferencia en características debido a una divergencia evolutiva.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la analogía?",
-                answers: [
-                    { text: "La similitud en características debido a una convergencia evolutiva.", correct: true },
-                    { text: "La similitud en características debido a un ancestro común.", correct: false },
-                    { text: "La diferencia en características debido a una divergencia evolutiva.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la filogenia?",
-                answers: [
-                    { text: "El estudio de las relaciones evolutivas entre organismos.", correct: true },
-                    { text: "El estudio de las estructuras celulares.", correct: false },
-                    { text: "El estudio de los fósiles.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el árbol filogenético?",
-                answers: [
-                    { text: "Una representación gráfica de las relaciones evolutivas entre especies.", correct: true },
-                    { text: "Un diagrama que muestra la estructura de una célula.", correct: false },
-                    { text: "Un mapa que muestra la distribución de una especie.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la biogeografía?",
-                answers: [
-                    { text: "El estudio de la distribución de las especies en el espacio y el tiempo.", correct: true },
-                    { text: "El estudio de la estructura y función de los ecosistemas.", correct: false },
-                    { text: "El estudio de la estructura y función de las células.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la coevolución?",
-                answers: [
-                    { text: "La influencia recíproca de dos o más especies en su evolución.", correct: true },
-                    { text: "La evolución de una especie en respuesta a cambios ambientales.", correct: false },
-                    { text: "La evolución de una especie en respuesta a cambios genéticos.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la deriva genética?",
-                answers: [
-                    { text: "El cambio aleatorio en las frecuencias de alelos en una población.", correct: true },
-                    { text: "La selección natural en una población.", correct: false },
-                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la selección artificial?",
-                answers: [
-                    { text: "La reproducción controlada de organismos con características deseadas por los humanos.", correct: true },
-                    { text: "La selección natural en una población.", correct: false },
-                    { text: "La migración de organismos a nuevos hábitats.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la genética de poblaciones?",
-                answers: [
-                    { text: "El estudio de las frecuencias de alelos y genotipos en una población.", correct: true },
-                    { text: "El estudio de la estructura y función de los ecosistemas.", correct: false },
-                    { text: "El estudio de la estructura y función de las células.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la adaptación convergente?",
-                answers: [
-                    { text: "El desarrollo de características similares en especies no relacionadas debido a presiones ambientales similares.", correct: true },
-                    { text: "La evolución de características diferentes en especies relacionadas debido a presiones ambientales diferentes.", correct: false },
-                    { text: "La evolución de características similares en especies relacionadas debido a presiones ambientales similares.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la adaptación divergente?",
-                answers: [
-                    { text: "La evolución de características diferentes en especies relacionadas debido a presiones ambientales diferentes.", correct: true },
-                    { text: "La evolución de características similares en especies no relacionadas debido a presiones ambientales similares.", correct: false },
-                    { text: "La evolución de características diferentes en especies no relacionadas debido a presiones ambientales diferentes.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la extinción?",
-                answers: [
-                    { text: "La desaparición total de una especie.", correct: true },
-                    { text: "La migración de una especie a nuevos hábitats.", correct: false },
-                    { text: "La evolución de una nueva especie.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el registro fósil?",
-                answers: [
-                    { text: "La colección de fósiles que documentan la historia de la vida en la Tierra.", correct: true },
-                    { text: "La colección de muestras de ADN de diferentes especies.", correct: false },
-                    { text: "La colección de especies vivas en la actualidad.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la herencia de caracteres adquiridos?",
-                answers: [
-                    { text: "La teoría desacreditada de que las características adquiridas durante la vida de un organismo pueden ser transmitidas a su descendencia.", correct: true },
-                    { text: "La teoría de que las características genéticas pueden ser modificadas por el entorno.", correct: false },
-                    { text: "La teoría de que los caracteres adquiridos no se heredan.", correct: false }
-                ]
-            }
-        ];
+</div>
 
-        let attempt = 0;
-        const maxAttempts = 3;
+<div class="container" id="evaluation" style="display:none;">
+    <h1>Unidad 8: La Evolución de la Vida</h1>
+    <div id="timer">Tiempo restante: 30:00</div>
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+    <!-- Indicador 8.1 -->
+    <h2>Indicador 8.1: Aportes de Aristóteles y Lamarck</h2>
+    <div class="question">
+        <label>1. ¿Cuál fue el aporte de Aristóteles sobre la clasificación de los seres vivos?</label>
+        <div class="options">
+            <label><input type="radio" name="q1" value="correcto" required> A. Clasificó a los seres vivos en plantas y animales.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> B. Desarrolló la teoría de la evolución.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> C. Introdujo el concepto de selección natural.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> D. Propuso la teoría del uso y desuso.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>2. ¿Qué concepto propuso Lamarck en su teoría evolutiva?</label>
+        <div class="options">
+            <label><input type="radio" name="q2" value="correcto" required> A. El uso y desuso de órganos.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> B. La selección natural.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> C. La herencia de caracteres adquiridos.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> D. La competencia entre especies.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>3. ¿Cómo influenció la teoría de Lamarck en el pensamiento científico de su época?</label>
+        <div class="options">
+            <label><input type="radio" name="q3" value="correcto" required> A. Introdujo la idea de que los seres vivos pueden adaptarse al ambiente.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> B. Rechazó cualquier posibilidad de evolución.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> C. Propuso que las especies eran inmutables.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> D. Aceptó la extinción como un proceso natural.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>4. ¿Cuál es una crítica común a la teoría de Lamarck?</label>
+        <div class="options">
+            <label><input type="radio" name="q4" value="correcto" required> A. La herencia de caracteres adquiridos no tiene base genética.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> B. La idea del uso y desuso fue aceptada universalmente.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> C. La selección natural es un proceso espontáneo.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> D. Lamarck no consideró la adaptación al ambiente.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>5. ¿Qué propuso Aristóteles en su clasificación de los seres vivos?</label>
+        <div class="options">
+            <label><input type="radio" name="q5" value="correcto" required> A. Una jerarquía basada en la complejidad de los organismos.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> B. La teoría del uso y desuso.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> C. La evolución de las especies.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> D. La clasificación basada en la genética.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>6. ¿Qué diferencia fundamental existe entre las teorías de Aristóteles y Lamarck?</label>
+        <div class="options">
+            <label><input type="radio" name="q6" value="correcto" required> A. Aristóteles no consideró la evolución, mientras que Lamarck sí lo hizo.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> B. Lamarck creía en la inmutabilidad de las especies.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> C. Aristóteles propuso la selección natural.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> D. Lamarck introdujo la idea de una jerarquía fija de los seres vivos.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 8.2 -->
+    <h2>Indicador 8.2: Teoría de la evolución de Darwin y Wallace</h2>
+    <div class="question">
+        <label>7. ¿Qué observación clave llevó a Darwin a desarrollar su teoría de la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q7" value="correcto" required> A. La variación en las especies de pinzones en las Islas Galápagos.</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> B. La inmutabilidad de las especies en su entorno natural.</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> C. La adaptación de los caballos en distintas regiones del mundo.</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> D. La estabilidad de las especies en diferentes ambientes.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>8. ¿Qué es la selección natural según Darwin y Wallace?</label>
+        <div class="options">
+            <label><input type="radio" name="q8" value="correcto" required> A. El proceso por el cual los individuos mejor adaptados tienen más probabilidades de sobrevivir y reproducirse.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> B. La idea de que las características adquiridas durante la vida se heredan.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> C. Un mecanismo por el cual todas las especies se mantienen inmutables.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> D. Un proceso que garantiza la perfección de todas las especies.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>9. ¿Cuál es una diferencia clave entre la teoría de Darwin y la de Wallace?</label>
+        <div class="options">
+            <label><input type="radio" name="q9" value="correcto" required> A. Darwin enfatizó la lucha por la existencia, mientras que Wallace destacó la importancia de la selección natural.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> B. Wallace propuso que los caracteres adquiridos se heredaban.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> C. Darwin no creía en la evolución, mientras que Wallace sí.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> D. Wallace enfatizó la herencia genética más que Darwin.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>10. ¿Qué impacto tuvo la teoría de la evolución en la biología moderna?</label>
+        <div class="options">
+            <label><input type="radio" name="q10" value="correcto" required> A. Se convirtió en el fundamento central de la biología moderna.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> B. Fue ampliamente rechazada por los biólogos contemporáneos.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> C. No tuvo ningún impacto significativo en la ciencia.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> D. Solo se aplicó a estudios de especies extinguidas.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>11. ¿Cómo describió Darwin el proceso de selección natural en su obra "El origen de las especies"?</label>
+        <div class="options">
+            <label><input type="radio" name="q11" value="correcto" required> A. Como un proceso gradual y acumulativo.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> B. Como un proceso rápido y espontáneo.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> C. Como un cambio brusco y radical.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> D. Como un proceso controlado por fuerzas externas.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>12. ¿Qué papel juega la variabilidad en la teoría de la evolución de Darwin y Wallace?</label>
+        <div class="options">
+            <label><input type="radio" name="q12" value="correcto" required> A. Es fundamental para la adaptación y supervivencia de las especies.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> B. Es irrelevante para la evolución de las especies.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> C. Limita la capacidad de las especies para evolucionar.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> D. Es un obstáculo para la selección natural.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 8.3 -->
+    <h2>Indicador 8.3: Mecanismos de la evolución</h2>
+    <div class="question">
+        <label>13. ¿Cuál es uno de los principales mecanismos de la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q13" value="correcto" required> A. La mutación genética.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> B. La estabilidad genética.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> C. La ausencia de variabilidad.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> D. La selección artificial.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>14. ¿Qué es la deriva genética?</label>
+        <div class="options">
+            <label><input type="radio" name="q14" value="correcto" required> A. Un cambio aleatorio en la frecuencia de los alelos en una población.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> B. Un proceso donde los alelos se mantienen constantes.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> C. Un mecanismo por el cual los organismos más adaptados sobreviven.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> D. Un proceso dirigido por la selección natural.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>15. ¿Qué es la selección estabilizadora?</label>
+        <div class="options">
+            <label><input type="radio" name="q15" value="correcto" required> A. Favorece los fenotipos intermedios y elimina los extremos.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> B. Favorece los fenotipos extremos a costa de los intermedios.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> C. Promueve la variabilidad genética sin cambios fenotípicos.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> D. Es un tipo de selección natural dirigida por el ser humano.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>16. ¿Qué es la selección disruptiva?</label>
+        <div class="options">
+            <label><input type="radio" name="q16" value="correcto" required> A. Favorece los fenotipos extremos y selecciona en contra de los intermedios.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> B. Favorece los fenotipos intermedios y elimina los extremos.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> C. Mantiene la estabilidad genética de una población.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> D. Se enfoca en la adaptación de especies en cautiverio.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>17. ¿Qué es la migración en términos evolutivos?</label>
+        <div class="options">
+            <label><input type="radio" name="q17" value="correcto" required> A. El movimiento de individuos entre poblaciones que introduce nuevos alelos.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> B. La adaptación de una población a un nuevo ambiente.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> C. Un cambio en la frecuencia de alelos dentro de una población.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> D. La selección de los individuos más fuertes para reproducirse.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>18. ¿Cuál es el papel de la recombinación genética en la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q18" value="correcto" required> A. Genera nuevas combinaciones de genes y aumenta la variabilidad genética.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> B. Mantiene la uniformidad genética en la población.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> C. Limita la variabilidad genética a través de la reproducción asexual.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> D. Controla la dirección de la evolución.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 8.4 -->
+    <h2>Indicador 8.4: Selección natural y selección artificial</h2>
+    <div class="question">
+        <label>19. ¿Qué es la selección natural?</label>
+        <div class="options">
+            <label><input type="radio" name="q19" value="correcto" required> A. Un proceso en el que los individuos mejor adaptados al ambiente tienen más probabilidades de sobrevivir y reproducirse.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> B. La selección de rasgos deseables por parte de los humanos.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> C. Un proceso donde todas las especies tienen igual probabilidad de sobrevivir.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> D. La creación de nuevas especies a través de hibridación.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>20. ¿Qué diferencia principal existe entre selección natural y selección artificial?</label>
+        <div class="options">
+            <label><input type="radio" name="q20" value="correcto" required> A. La selección natural es un proceso natural, mientras que la selección artificial es dirigida por el ser humano.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> B. La selección artificial ocurre en la naturaleza sin intervención humana.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> C. La selección natural siempre produce nuevas especies.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> D. La selección artificial no afecta la evolución de las especies.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>21. ¿Qué es un ejemplo de selección artificial?</label>
+        <div class="options">
+            <label><input type="radio" name="q21" value="correcto" required> A. El cruce de perros para obtener razas con características específicas.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> B. La adaptación de las mariposas al color de los árboles.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> C. La resistencia de las bacterias a los antibióticos.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> D. La dispersión de semillas por el viento.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>22. ¿Cuál es una consecuencia de la selección natural en una población?</label>
+        <div class="options">
+            <label><input type="radio" name="q22" value="correcto" required> A. Los individuos menos adaptados tienen menos probabilidades de sobrevivir.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> B. Todos los individuos de la población tienen las mismas probabilidades de reproducirse.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> C. Los rasgos no influyen en la probabilidad de supervivencia.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> D. La selección natural no cambia la frecuencia de los alelos en una población.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>23. ¿Qué papel juega la selección artificial en la agricultura?</label>
+        <div class="options">
+            <label><input type="radio" name="q23" value="correcto" required> A. Permite desarrollar cultivos con características deseables, como resistencia a plagas.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> B. Ocurre de manera espontánea sin intervención humana.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> C. Es un proceso natural que no requiere manipulación.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> D. No afecta las características de los cultivos.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>24. ¿Qué es un ejemplo de selección natural en acción?</label>
+        <div class="options">
+            <label><input type="radio" name="q24" value="correcto" required> A. La resistencia de las bacterias a los antibióticos.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> B. La cría de caballos para carreras de velocidad.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> C. El cruce de plantas para mejorar la producción.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> D. La manipulación genética en laboratorios.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 8.5 -->
+    <h2>Indicador 8.5: Pruebas de la evolución</h2>
+    <div class="question">
+        <label>25. ¿Qué evidencia aporta el registro fósil a la teoría de la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q25" value="correcto" required> A. Muestra los cambios en las especies a lo largo del tiempo.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> B. Demuestra que todas las especies actuales existieron siempre.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> C. Refuerza la idea de que las especies son inmutables.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> D. Indica que las especies siempre han sido las mismas.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>26. ¿Qué prueba ofrece la embriología comparada sobre la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q26" value="correcto" required> A. Los embriones de diferentes especies muestran similitudes que sugieren un ancestro común.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> B. Los embriones de todas las especies son completamente diferentes.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> C. Las similitudes embrionarias no aportan información sobre la evolución.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> D. La embriología solo confirma la evolución en mamíferos.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>27. ¿Cómo apoyan las pruebas morfológicas la teoría de la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q27" value="correcto" required> A. Las estructuras similares en diferentes especies sugieren un origen evolutivo común.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> B. La morfología muestra que todas las especies son completamente distintas.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> C. Las similitudes morfológicas no son indicativas de relación evolutiva.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> D. La morfología no proporciona evidencia de evolución.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>28. ¿Qué indica la existencia de órganos vestigiales en algunas especies?</label>
+        <div class="options">
+            <label><input type="radio" name="q28" value="correcto" required> A. Que los organismos han evolucionado y algunos órganos han perdido su función original.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> B. Que los organismos no han experimentado cambios evolutivos.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> C. Que los órganos vestigiales no aportan ninguna información evolutiva.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> D. Que todos los órganos tienen una función vital para la supervivencia.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>29. ¿Qué aportan las pruebas taxonómicas a la teoría de la evolución?</label>
+        <div class="options">
+            <label><input type="radio" name="q29" value="correcto" required> A. Clasifican a los seres vivos basándose en sus relaciones evolutivas.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> B. Confirman que las especies actuales no tienen ancestros comunes.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> C. Refuerzan la idea de que las especies son inmutables.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> D. No aportan información relevante sobre la evolución.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>30. ¿Qué conclusión se puede obtener de la comparación de estructuras homólogas entre diferentes especies?</label>
+        <div class="options">
+            <label><input type="radio" name="q30" value="correcto" required> A. Que estas especies tienen un ancestro común.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> B. Que las especies han evolucionado independientemente.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> C. Que las especies no comparten ningún vínculo evolutivo.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> D. Que estas estructuras no tienen ninguna relación evolutiva.</label>
+        </div>
+    </div>
+
+    <button class="submit-btn" onclick="calculateGrade()">Obtener Calificación</button>
+</div>
+
+<div class="popup" id="finalPopup" style="display: none;">
+    <div class="popup-content">
+        <h2>Resultado de la Evaluación</h2>
+        <p id="nombreFinal"></p>
+        <p id="nieFinal"></p>
+        <p id="gradeFinal"></p>
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    const authorizedNIEs = [
+        "4839280", "19711634", "4839293", "6297544", "19711644",
+        "3850927", "19711635", "4267835", "3293986", "19711278",
+        "19711637", "4267839", "19806177", "4839298", "4267832",
+        "4267843", "4839279", "4839301", "19964688"
+    ];
+
+    let timer;
+    let totalSeconds = 1800;
+
+    window.onload = function() {
+        document.getElementById('popup').style.display = 'flex';
+    };
+
+    function validatePopup() {
+        const nombre = document.getElementById('nombre').value;
+        const nie = document.getElementById('nie').value;
+
+        if (nombre === "" || nie === "") {
+            alert("Por favor, complete todos los campos.");
+        } else if (!authorizedNIEs.includes(nie)) {
+            alert("NIE no autorizado.");
+        } else {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('evaluation').style.display = 'block';
+            startTimer();
         }
+    }
 
-        function loadQuiz() {
-            const quizContainer = document.getElementById('quiz');
-            quizContainer.innerHTML = '';
-            quizData.forEach((data, index) => {
-                const questionContainer = document.createElement('div');
-                questionContainer.className = 'question';
+    function startTimer() {
+        timer = setInterval(function() {
+            totalSeconds--;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-                const questionTitle = document.createElement('h3');
-                questionTitle.innerText = `${index + 1}. ${data.question}`;
-                questionContainer.appendChild(questionTitle);
-
-                const optionsList = document.createElement('ul');
-                optionsList.className = 'options';
-
-                shuffle(data.answers).forEach(answer => {
-                    const option = document.createElement('li');
-                    const optionLabel = document.createElement('label');
-                    const optionInput = document.createElement('input');
-                    optionInput.type = 'radio';
-                    optionInput.name = `question${index}`;
-                    optionInput.value = answer.correct;
-                    optionLabel.appendChild(optionInput);
-                    optionLabel.appendChild(document.createTextNode(answer.text));
-                    option.appendChild(optionLabel);
-                    optionsList.appendChild(option);
-                });
-
-                questionContainer.appendChild(optionsList);
-                quizContainer.appendChild(questionContainer);
-            });
-        }
-
-        function submitQuiz() {
-            if (attempt >= maxAttempts) {
-                alert('Has alcanzado el número máximo de intentos.');
-                return;
+            if (totalSeconds <= 0) {
+                clearInterval(timer);
+                calculateGrade();
             }
+        }, 1000);
+    }
 
-            const resultsContainer = document.getElementById('results');
-            const answers = document.querySelectorAll('input[type="radio"]:checked');
-            let score = 0;
+    function calculateGrade() {
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const correctAnswers = document.querySelectorAll('input[type="radio"]:checked[value="correcto"]').length;
+        const maxPoints = 10;
+        const grade = (correctAnswers / totalQuestions) * maxPoints;
 
-            quizData.forEach((data, index) => {
-                const selected = answers[index] ? answers[index].value === 'true' : null;
-                if (selected === true) {
-                    score += 0.4; // Cada respuesta correcta vale 0.4 puntos
-                }
-            });
+        document.getElementById('nombreFinal').textContent = "Nombre: " + document.getElementById('nombre').value;
+        document.getElementById('nieFinal').textContent = "NIE: " + document.getElementById('nie').value;
+        document.getElementById('gradeFinal').textContent = "Su calificación es: " + grade.toFixed(2) + " de " + maxPoints;
 
-            score = Math.round(score * 10) / 10; // Redondear a un decimal
-            let feedback = quizData.map((data, index) => {
-                const selected = answers[index] ? answers[index].value === 'true' : null;
-                let result;
-                if (selected === null) {
-                    result = "No contestada";
-                } else if (selected === true) {
-                    result = "Correcta";
-                } else {
-                    result = "Incorrecta";
-                }
-                return `<p>${index + 1}. ${result}</p>`;
-            }).join("");
+        document.getElementById('finalPopup').style.display = 'flex';
+    }
 
-            resultsContainer.innerHTML = `<h3>Resultados:</h3><p>Puntaje: ${score} / 10</p>${feedback}`;
+    function closePopup() {
+        document.getElementById('finalPopup').style.display = 'none';
+    }
+</script>
 
-            attempt++;
-            if (attempt >= maxAttempts) {
-                alert('Has alcanzado el número máximo de intentos.');
-            }
-        }
-
-        document.getElementById('submit').addEventListener('click', submitQuiz);
-
-        loadQuiz();
-    </script>
 </body>
 </html>
